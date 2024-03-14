@@ -1,0 +1,10 @@
+.full-width-container {
+    max-width: none !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+.small {
+    font-size: 0.875rem; 
+    padding: 0.25rem 0.5rem;
+}

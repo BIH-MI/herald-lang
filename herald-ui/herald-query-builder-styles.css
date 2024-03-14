@@ -1,0 +1,42 @@
+/* Make the overall QueryBuilder components smaller */
+.query-builder .rules-group-container {
+padding: 3px 0;
+}
+
+.query-builder .rule-container {
+margin-bottom: 3px;
+}
+
+/* Make input fields and dropdowns smaller */
+.query-builder .form-control,
+.query-builder .form-select {
+padding: 0.1rem 0.4rem;
+font-size: 0.7rem;
+height: calc(1.3em + 0.2rem + 2px);
+}
+
+.query-builder .form-select {
+padding-right: 0.6rem;
+}
+
+/* Adjust margin and padding for rule-operator-container and rule-value-container */
+.query-builder .rule-operator-container,
+.query-builder .rule-value-container {
+margin-left: 4px;
+}
+
+/* Make the add rule and group buttons smaller */
+.query-builder .btn {
+padding: 0.1rem 0.4rem;
+font-size: 0.7rem;
+line-height: 1.4;
+}
+
+.query-builder .btn .caret {
+margin-left: 3px;
+}
+
+/* Make the rule-action buttons smaller */
+.query-builder .rule-actions {
+font-size: 0.7rem;
+}  

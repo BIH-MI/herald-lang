@@ -1,0 +1,54 @@
+/* Herald Basic Styles */
+
+.tree-node {
+    padding: 5px;
+    margin-left: 20px;
+    border-left: 1px solid #ccc;
+    position: relative;
+}
+
+.tree-node > .btn-toggle {
+    background-color: transparent;
+    border: none;
+    position: absolute;
+    left: -25px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.modal-content-limited {
+    max-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+}	  
+
+.modal-body-scrollable {
+    overflow-y: auto;
+}
+
+.tree-node span.clickable {
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 2px 5px;
+    border-radius: 5px;
+}
+
+.tree-node span.clickable:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+.border-red {
+    border: 1px solid #FF7F7F;
+    box-shadow: 0 0 5px #FF7F7F;
+}
+
+.border-green {
+    border: 1px solid #90EE90;
+    box-shadow: 0 0 5px #90EE90;
+}
+
+.border-orange {
+    border: 1px solid #FFA500;
+    box-shadow: 0 0 5px #FFA500;
+}
+
