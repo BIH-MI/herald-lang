@@ -378,13 +378,13 @@ function initHeraldQueryEntryForm() {
         <div class="row mt-3 mb-3">
             <div class="col-auto">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="age" id="ageCheckbox">
+                    <input class="form-check-input" type="checkbox" value="age" id="ageCheckbox" checked>
                     <label class="form-check-label" for="ageCheckbox">Patient age</label>
                 </div>
             </div>
             <div class="col-auto">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="sex" id="sexCheckbox">
+                    <input class="form-check-input" type="checkbox" value="sex" id="sexCheckbox" checked>
                     <label class="form-check-label" for="sexCheckbox">Patient sex</label>
                 </div>
             </div>

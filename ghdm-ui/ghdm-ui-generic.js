@@ -51,7 +51,6 @@ function initCohortSelection(cohorts) {
                     <div class="col-12">
                         <div class="d-flex justify-content-between">
 							<label for="cohortSelect" class="form-label">Select cohort(s)</label>
-							<button type="button" class="btn btn-primary small mb-3" id="exportPDF">Export to PDF</button>
                         </div>
                         <div class="d-flex flex-column position-relative border rounded">
                             <div id="cohortSelect" class="mb-3 my-2 mx-2"></div>
@@ -98,45 +97,6 @@ function initCohortSelection(cohorts) {
 }
 
 
-/**
- * Initialize and add functions for the PDF export.
- */
-function initPDFExport() {
-
-	document.getElementById('exportPDF').addEventListener('click', () => {
-		const outputDiv = document.getElementById('ghdmContent');
-	  
-		window.jsPDF = window.jspdf.jsPDF;
-	
-		html2canvas(outputDiv, {
-		  scale: 1, // You can adjust the scale to fit the content
-		  useCORS: true,
-		  scrollY: 0,
-		}).then((canvas) => {
-		  const imgData = canvas.toDataURL('image/png');
-		  const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-		  const imgProps = pdf.getImageProperties(imgData);
-		  const pdfWidth = pdf.internal.pageSize.getWidth();
-		  const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-	  
-		  const pageHeight = pdf.internal.pageSize.getHeight();
-	  
-		  let yPos = 0;
-	  
-		  while (yPos < pdfHeight) {
-			if (yPos !== 0) {
-			  pdf.addPage(); // Add a new page if the content doesn't fit on the current page
-			}
-			pdf.addImage(imgData, 'PNG', 0, -yPos, pdfWidth, pdfHeight);
-			yPos += pageHeight;
-		  }
-
-		  pdf.save('output.pdf');
-		  
-		});
-	  });
-}
-
 
 /**
  * Initializes tooltips
@@ -144,7 +104,6 @@ function initPDFExport() {
 function initGHDMUtils(cohorts, callback) {
 
 	initCohortSelection(cohorts);
-	initPDFExport();
 
 	if (callback) {
 		callback();
