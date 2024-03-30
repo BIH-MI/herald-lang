@@ -121,7 +121,7 @@ limitations under the License.
               "LAST (VALUE > \"98.6\" AND LABEL = \"Temperature\") APART FROM (LABEL = \"HeartRate\") BY 2 DAYS"
             ];
 
-            const comparisonQueries = [
+            const relationshipQueries = [
               // Ratios between matching pairs of HeartRate and SystolicBloodPressure
               'RATIO BETWEEN (LABEL = "HeartRate") AND (LABEL = "SystolicBloodPressure")',
               
@@ -141,7 +141,7 @@ limitations under the License.
               'EQUALITY OF (LABEL = "BloodPressure") AND (LABEL = "SystolicBloodPressure") AFTER (2023-01-01)',
             ];
 
-            const searchQueries = [
+            const existenceQueries = [
               // Expected result: true
               'EXISTS (LABEL = "BloodPressure" AND START = "2023-01-01T08:00:00" AND END = "2023-01-01T08:00:00")',
 
@@ -213,11 +213,11 @@ limitations under the License.
               console.log("Executing: " + query);
               console.log(executeHERALD(query, testObservations));
             }
-            for (query of searchQueries) {
+            for (query of existenceQueries) {
               console.log("Executing: " + query);
               console.log(executeHERALD(query, testObservations));
             }
-            for (query of comparisonQueries) {
+            for (query of relationshipQueries) {
               console.log("Executing: " + query);
               console.log(executeHERALD(query, testObservations));
             }

@@ -35,17 +35,17 @@ function isSelectionQuery(parsedResult) {
 }
 
 /**
- * Check if is a comparison query
+ * Check if is a relationship query
  */
-function isComparisonQuery(parsedResult) {
-    return parsedResult.hasOwnProperty('comparison');
+function isRelationshipQuery(parsedResult) {
+    return parsedResult.hasOwnProperty('relationship');
 }
 
 /**
- * Check if it is an search query
+ * Check if it is an existence query
  */
-function isSearchQuery(parsedResult) {
-    return parsedResult.hasOwnProperty('search');
+function isExistenceQuery(parsedResult) {
+    return parsedResult.hasOwnProperty('existence');
 }
 
 /**
@@ -158,9 +158,9 @@ function bindSelectionOrAggregationQuery(modal, query) {
 }
 
 /**
- * Parse comparison query
+ * Parse relationship query
  */
-function bindComparisonQuery(modal, query) {
+function bindRelationshipQuery(modal, query) {
 
     // Unwrap
     query = unwrapExpression(query);
@@ -168,25 +168,25 @@ function bindComparisonQuery(modal, query) {
     // Get UI elements
     const queryKeywordSelect = modal.querySelector('#queryKeywordSelect');
     const queryFilterInput = modal.querySelector('#queryFilterInput');
-    const comparisonQueryFilterRow = modal.querySelector('#comparisonQueryFilterRow');
-    const comparisonQueryFilterInput = modal.querySelector('.comparisonQueryFilterInput');
+    const relationshipQueryFilterRow = modal.querySelector('#relationshipQueryFilterRow');
+    const relationshipQueryFilterInput = modal.querySelector('.relationshipQueryFilterInput');
 
     // Update the query type
-    queryKeywordSelect.value = query.comparison.value;
+    queryKeywordSelect.value = query.relationship.value;
     // Parse filter
     bindFilter(queryFilterInput, query.filter1);
-    bindFilter(comparisonQueryFilterInput, query.filter2);
+    bindFilter(relationshipQueryFilterInput, query.filter2);
     // Parse temporal relationship
     bindTemporalRelationship(modal, query.time);
 
     // Show row
-    comparisonQueryFilterRow.parentNode.style.display = 'block';
+    relationshipQueryFilterRow.parentNode.style.display = 'block';
 }
 
 /**
- * Parse search query
+ * Parse existence query
  */
-function bindSearchQuery(modal, query) {
+function bindExistenceQuery(modal, query) {
 
     // Unwrap
     query = unwrapExpression(query);
@@ -196,31 +196,31 @@ function bindSearchQuery(modal, query) {
     const queryFilterInput = modal.querySelector('#queryFilterInput');
   
     // Recursive function for parsing the expression
-    function parseSearchStatement(searchQuery, keywordElement, filterElement) {
+    function parseExistenceStatement(existenceQuery, keywordElement, filterElement) {
 
       // Leaf
-      if (searchQuery.search) {
+      if (existenceQuery.existence) {
         // Set keyword and filter
-        keywordElement.value = searchQuery.search.value;
-        bindFilter(filterElement, searchQuery.filter);
+        keywordElement.value = existenceQuery.existence.value;
+        bindFilter(filterElement, existenceQuery.filter);
 
       // Inner node
-      } else if (searchQuery.left && searchQuery.conjunction) {
+      } else if (existenceQuery.left && existenceQuery.conjunction) {
 
         // Create new row
         const lastKeywordFilterRow = modal.querySelector('.keywordFilterRow:last-child');
-        addSearchQueryRow(lastKeywordFilterRow);
-        const newKeywordElement = lastKeywordFilterRow.querySelector('.searchQueryKeywordSelect');
-        const newFilterElement = lastKeywordFilterRow.querySelector('.searchQueryFilterInput');
+        addExistenceQueryRow(lastKeywordFilterRow);
+        const newKeywordElement = lastKeywordFilterRow.querySelector('.existenceQueryKeywordSelect');
+        const newFilterElement = lastKeywordFilterRow.querySelector('.existenceQueryFilterInput');
 
         // Recurse
-        parseSearchStatement(searchQuery.left, keywordElement, filterElement);
-        parseSearchStatement(searchQuery.right, newKeywordElement, newFilterElement);
+        parseExistenceStatement(existenceQuery.left, keywordElement, filterElement);
+        parseExistenceStatement(existenceQuery.right, newKeywordElement, newFilterElement);
       }
     }
 
-    // Parse search
-    parseSearchStatement(query.search, queryKeywordSelect, queryFilterInput);
+    // Parse existence
+    parseExistenceStatement(query.existence, queryKeywordSelect, queryFilterInput);
   
     // Parse temporal relationship
     bindTemporalRelationship(modal, query.time);
@@ -249,12 +249,12 @@ function bindQuery(modal, query) {
     } else if (isSelectionQuery(parsedQuery)) {
       bindQueryType(modal, 'selection');
       bindSelectionOrAggregationQuery(modal, parsedQuery);
-    } else if (isComparisonQuery(parsedQuery)) {
-      bindQueryType(modal, 'comparison');
-      bindComparisonQuery(modal, parsedQuery);
-    } else if (isSearchQuery(parsedQuery)) {
-      bindQueryType(modal, 'search');
-      bindSearchQuery(modal, parsedQuery);
+    } else if (isRelationshipQuery(parsedQuery)) {
+      bindQueryType(modal, 'relationship');
+      bindRelationshipQuery(modal, parsedQuery);
+    } else if (isExistenceQuery(parsedQuery)) {
+      bindQueryType(modal, 'existence');
+      bindExistenceQuery(modal, parsedQuery);
     }
   }
 }
@@ -464,7 +464,7 @@ function renderQuery(modal) {
     let timeUnit = timeUnitSelect.value.toUpperCase();
     let temporalAnchorValue = temporalRelationshipTypeInput.value;
   
-    // Build temporal comparison
+    // Build temporal relationship
     let temporalRelationshipString = undefined;
     if (temporalRelationship && temporalRelationship !== 'NO TEMPORAL RESTRICTION') {
       if (timeUnit && timeUnit !== 'NONE') {
@@ -478,22 +478,22 @@ function renderQuery(modal) {
     if (queryType === "SELECTION" || queryType === "AGGREGATION") {
       return `${keyword} ${addParentheses(filter)}` + (temporalRelationshipString ? ' ' + temporalRelationshipString : '');
 
-    // Comparison query
-    } else if (queryType === "COMPARISON") {
-      const comparisonQueryFilterInput = modal.querySelector(".comparisonQueryFilterInput");
-      let comparisonFilter = comparisonQueryFilterInput.value;
-      return `${keyword} ${addParentheses(filter)} AND ${addParentheses(comparisonFilter)}` + (temporalRelationshipString ? ' ' + temporalRelationshipString : '');
+    // Relationship query
+    } else if (queryType === "RELATIONSHIP") {
+      const relationshipQueryFilterInput = modal.querySelector(".relationshipQueryFilterInput");
+      let relationshipFilter = relationshipQueryFilterInput.value;
+      return `${keyword} ${addParentheses(filter)} AND ${addParentheses(relationshipFilter)}` + (temporalRelationshipString ? ' ' + temporalRelationshipString : '');
     
-    // Search query
-    } else if (queryType === "SEARCH") {
-      const searchRows = Array.from(modal.querySelectorAll(".keywordFilterRow"));
-      searchRows.pop();
-      let searchFilters = searchRows.map(row => {
-        const keywordSelect = row.querySelector(".searchQueryKeywordSelect");
-        const filterInput = row.querySelector(".searchQueryFilterInput");
+    // Existence query
+    } else if (queryType === "EXISTENCE") {
+      const existenceRows = Array.from(modal.querySelectorAll(".keywordFilterRow"));
+      existenceRows.pop();
+      let existenceFilters = existenceRows.map(row => {
+        const keywordSelect = row.querySelector(".existenceQueryKeywordSelect");
+        const filterInput = row.querySelector(".existenceQueryFilterInput");
         return `AND ${keywordSelect.value.toUpperCase()} ${addParentheses(filterInput.value)}`;
       }).join(" ");
-      return `${keyword} ${addParentheses(filter)}` + (searchFilters ? ' ' + searchFilters : '') + (temporalRelationshipString ? ' ' + temporalRelationshipString : '');
+      return `${keyword} ${addParentheses(filter)}` + (existenceFilters ? ' ' + existenceFilters : '') + (temporalRelationshipString ? ' ' + temporalRelationshipString : '');
     } 
     
     // No result

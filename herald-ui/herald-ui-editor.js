@@ -26,8 +26,8 @@
 const queryTypeKeywords = {
   selection: ['FIRST', 'LAST', 'ANY'],
   aggregation: ['AVERAGE', 'COUNT', 'SUM', 'MIN', 'MAX', 'MOST FREQUENT'],
-  search: ['EXISTS', 'NOT EXISTS'],
-  comparison: ['RATIO BETWEEN', 'DIFFERENCE BETWEEN', 'EQUALITY OF'],
+  existence: ['EXISTS', 'NOT EXISTS'],
+  relationship: ['RATIO BETWEEN', 'DIFFERENCE BETWEEN', 'EQUALITY OF'],
 };
 
 /**
@@ -173,7 +173,7 @@ async function showHeraldQueryModal(name, query) {
       }
     });
 
-    // Search query row cloning
+    // Existence query row cloning
     document.addEventListener('click', function (event) {
 
       // Prepare
@@ -184,12 +184,12 @@ async function showHeraldQueryModal(name, query) {
       }
       
       // Add row
-      if (target.classList.contains('searchAddButton')) {
-          addSearchQueryRow(keywordFilterRow);
+      if (target.classList.contains('existenceAddButton')) {
+          addExistenceQueryRow(keywordFilterRow);
       // Remove row
-      } else if (target.classList.contains('searchRemoveButton')) {
+      } else if (target.classList.contains('existenceRemoveButton')) {
         if (keywordFilterRow.parentNode.querySelectorAll('.keywordFilterRow').length > 1) {
-          removeSearchQueryRow(keywordFilterRow);
+          removeExistenceQueryRow(keywordFilterRow);
         }
       }
     });
@@ -264,25 +264,25 @@ async function showHeraldQueryModal(name, query) {
     const timeUnitSelect = event.target.value;
     updateTemporalRelationshipInput();
   });
-  const searchQueryFilterInput = queryModal.querySelectorAll('.searchQueryFilterInput')[0];
-  searchQueryFilterInput.addEventListener('focus', function () {
+  const existenceQueryFilterInput = queryModal.querySelectorAll('.existenceQueryFilterInput')[0];
+  existenceQueryFilterInput.addEventListener('focus', function () {
     showQueryBuilder(this);
   });
-  searchQueryFilterInput.addEventListener('input', function () {
+  existenceQueryFilterInput.addEventListener('input', function () {
     showQueryBuilder(this);
   });
-  searchQueryFilterInput.addEventListener('blur', function () {
-    $(searchQueryFilterInput).removeClass('is-invalid');
+  existenceQueryFilterInput.addEventListener('blur', function () {
+    $(existenceQueryFilterInput).removeClass('is-invalid');
   });
-  const comparisonQueryFilterInput = queryModal.querySelector('.comparisonQueryFilterInput');
-  comparisonQueryFilterInput.addEventListener('focus', function () {
+  const relationshipQueryFilterInput = queryModal.querySelector('.relationshipQueryFilterInput');
+  relationshipQueryFilterInput.addEventListener('focus', function () {
     showQueryBuilder(this);
   });
-  comparisonQueryFilterInput.addEventListener('input', function () {
+  relationshipQueryFilterInput.addEventListener('input', function () {
     showQueryBuilder(this);
   });
-  comparisonQueryFilterInput.addEventListener('blur', function () {
-    $(comparisonQueryFilterInput).removeClass('is-invalid');
+  relationshipQueryFilterInput.addEventListener('blur', function () {
+    $(relationshipQueryFilterInput).removeClass('is-invalid');
   });
   const queryFilterInput = queryModal.querySelector('#queryFilterInput');
   queryFilterInput.addEventListener('focus', function () {
@@ -358,38 +358,38 @@ async function showHeraldQueryModal(name, query) {
 }
 
 /**
- * Function to add an search query row
+ * Function to add an existence query row
  */
-function addSearchQueryRow(keywordFilterRow) {
+function addExistenceQueryRow(keywordFilterRow) {
 
-  const searchQueryAddButton = keywordFilterRow.querySelector('.searchAddButton');
-  const searchQueryRemoveButton = keywordFilterRow.querySelector('.searchRemoveButton');
-  const searchQueryKeywordSelect = keywordFilterRow.querySelector('.searchQueryKeywordSelect');
-  const searchQueryFilterInput = keywordFilterRow.querySelector('.searchQueryFilterInput');
+  const existenceQueryAddButton = keywordFilterRow.querySelector('.existenceAddButton');
+  const existenceQueryRemoveButton = keywordFilterRow.querySelector('.existenceRemoveButton');
+  const existenceQueryKeywordSelect = keywordFilterRow.querySelector('.existenceQueryKeywordSelect');
+  const existenceQueryFilterInput = keywordFilterRow.querySelector('.existenceQueryFilterInput');
 
   // Clone row
   const newRow = keywordFilterRow.cloneNode(true);
   keywordFilterRow.parentNode.insertBefore(newRow, keywordFilterRow.nextSibling);
 
   // Attach listeners to clone
-  let newsearchQueryFilterInput = newRow.getElementsByClassName('searchQueryFilterInput')[0];
-  newsearchQueryFilterInput.addEventListener('focus', function () {
+  let newexistenceQueryFilterInput = newRow.getElementsByClassName('existenceQueryFilterInput')[0];
+  newexistenceQueryFilterInput.addEventListener('focus', function () {
     showQueryBuilder(this);
   });
-  newsearchQueryFilterInput.addEventListener('input', function () {
+  newexistenceQueryFilterInput.addEventListener('input', function () {
     showQueryBuilder(this);
   });
-  newsearchQueryFilterInput.addEventListener('blur', function () {
-    $(newsearchQueryFilterInput).removeClass('is-invalid');
+  newexistenceQueryFilterInput.addEventListener('blur', function () {
+    $(newexistenceQueryFilterInput).removeClass('is-invalid');
   });
   
   // Update buttons
-  searchQueryAddButton.parentNode.style.display = 'none';
-  searchQueryRemoveButton.parentNode.style.display = 'none';
-  searchQueryKeywordSelect.parentNode.style.display = 'block';
-  searchQueryFilterInput.parentNode.style.display = 'block';
+  existenceQueryAddButton.parentNode.style.display = 'none';
+  existenceQueryRemoveButton.parentNode.style.display = 'none';
+  existenceQueryKeywordSelect.parentNode.style.display = 'block';
+  existenceQueryFilterInput.parentNode.style.display = 'block';
   if (keywordFilterRow.parentNode.querySelectorAll('.keywordFilterRow').length > 1) {
-    keywordFilterRow.parentNode.querySelectorAll('.searchRemoveButton').forEach(btn => btn.removeAttribute('disabled'));
+    keywordFilterRow.parentNode.querySelectorAll('.existenceRemoveButton').forEach(btn => btn.removeAttribute('disabled'));
   }
 
   // Done
@@ -397,9 +397,9 @@ function addSearchQueryRow(keywordFilterRow) {
 }
 
 /**
- * Removes an search row
+ * Removes an existence row
  */
-function removeSearchQueryRow(keywordFilterRow) {
+function removeExistenceQueryRow(keywordFilterRow) {
   
   // Remove row
   const prevRow = keywordFilterRow.previousElementSibling;
@@ -408,10 +408,10 @@ function removeSearchQueryRow(keywordFilterRow) {
 
   if (prevRow) {
     // Update buttons
-    const prevAddButton = prevRow.querySelector('.searchAddButton');
-    const prevRemoveButton = prevRow.querySelector('.searchRemoveButton');
-    const prevQueryKeywordSelect = prevRow.querySelector('.searchQueryKeywordSelect');
-    const prevQueryFilterInput = prevRow.querySelector('.searchQueryFilterInput');
+    const prevAddButton = prevRow.querySelector('.existenceAddButton');
+    const prevRemoveButton = prevRow.querySelector('.existenceRemoveButton');
+    const prevQueryKeywordSelect = prevRow.querySelector('.existenceQueryKeywordSelect');
+    const prevQueryFilterInput = prevRow.querySelector('.existenceQueryFilterInput');
     prevRemoveButton.parentNode.style.display = 'block';
     prevAddButton.parentNode.style.display = 'block';
     prevQueryKeywordSelect.parentNode.style.display = 'none';
@@ -419,7 +419,7 @@ function removeSearchQueryRow(keywordFilterRow) {
   }
 
   if (parentNode.querySelectorAll('.keywordFilterRow').length === 1) {
-    parentNode.querySelector('.searchRemoveButton').setAttribute('disabled', true);
+    parentNode.querySelector('.existenceRemoveButton').setAttribute('disabled', true);
   }
 }
 
@@ -437,17 +437,17 @@ function updateQueryConfiguration(queryType) {
       keywordSelect.add(option);
     }
   }
-  const searchKeywordFilterRows = queryModal.querySelector('#searchKeywordFilterRows');
-  if (queryType === 'search') {
-    searchKeywordFilterRows.style.display = 'block';
+  const existenceKeywordFilterRows = queryModal.querySelector('#existenceKeywordFilterRows');
+  if (queryType === 'existence') {
+    existenceKeywordFilterRows.style.display = 'block';
   } else {
-    searchKeywordFilterRows.style.display = 'none';
+    existenceKeywordFilterRows.style.display = 'none';
   }
-  const comparisonQueryFilterRows = queryModal.querySelector('#comparisonQueryFilterRow');
-  if (queryType === 'comparison') {
-    comparisonQueryFilterRows.style.display = 'block';
+  const relationshipQueryFilterRows = queryModal.querySelector('#relationshipQueryFilterRow');
+  if (queryType === 'relationship') {
+    relationshipQueryFilterRows.style.display = 'block';
   } else {
-    comparisonQueryFilterRows.style.display = 'none';
+    relationshipQueryFilterRows.style.display = 'none';
   }
 }
 
@@ -530,8 +530,8 @@ function initHeraldQueryBuilderModal() {
                   <select class="form-select small" id="queryTypeSelect">
                       <option value="selection" selected>Selection</option>
                       <option value="aggregation">Aggregation</option>
-                      <option value="comparison">Comparison</option>
-                      <option value="search">Search</option>
+                      <option value="relationship">Relationship</option>
+                      <option value="existence">Existence</option>
                   </select>
                   </div>
               </div>
@@ -545,37 +545,37 @@ function initHeraldQueryBuilderModal() {
                   <input type="text" class="form-control small herald-auto-complete" id="queryFilterInput" placeholder="Filter">
                   </div>
               </div>
-              <!-- Additional rows for search queries-->
-              <div id="searchKeywordFilterRows" style="display: none;">
+              <!-- Additional rows for existence queries-->
+              <div id="existenceKeywordFilterRows" style="display: none;">
                   <div class="keywordFilterRow">
                   <div class="row mb-2">
                       <div class="col px-1" style="display: none;">
-                      <select class="form-select small searchQueryKeywordSelect">
+                      <select class="form-select small existenceQueryKeywordSelect">
                           <option value="EXISTS" selected>AND EXISTS</option>>
                           <option value="NOT EXISTS">AND NOT EXISTS</option>
                       </select>
                       </div>
                       <div class="col px-1" style="display: none;">
-                      <input type="text" class="form-control small searchQueryFilterInput herald-auto-complete" placeholder="Filter">
+                      <input type="text" class="form-control small existenceQueryFilterInput herald-auto-complete" placeholder="Filter">
                       </div>
                       <div class="col px-1">
-                      <button type="button" class="btn btn-primary btn-sm w-100 searchAddButton">Add</button>
+                      <button type="button" class="btn btn-primary btn-sm w-100 existenceAddButton">Add</button>
                       </div>
                       <div class="col px-1">
-                      <button type="button" class="btn btn-danger btn-sm w-100 searchRemoveButton" disabled>Remove</button>
+                      <button type="button" class="btn btn-danger btn-sm w-100 existenceRemoveButton" disabled>Remove</button>
                       </div>
                   </div>
                   </div>
               </div>
-              <!-- Additional row for comparison queries-->
-              <div id="comparisonQueryFilterRow" style="display: none;">
-                  <div class="comparisonFilterRow">
+              <!-- Additional row for relationship queries-->
+              <div id="relationshipQueryFilterRow" style="display: none;">
+                  <div class="relationshipFilterRow">
                   <div class="row mb-2 px-1">
                       <div class="col d-flex justify-content-end px-1">
                           <span class="small">AND</span>
                       </div>
                       <div class="col px-1">
-                      <input type="text" class="form-control small comparisonQueryFilterInput herald-auto-complete" placeholder="Filter">
+                      <input type="text" class="form-control small relationshipQueryFilterInput herald-auto-complete" placeholder="Filter">
                       </div>
                   </div>
                   </div>
