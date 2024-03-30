@@ -7,11 +7,11 @@
 query -> filter %WS:* temporalRelationship:? {% function (d) { return {filter: d[0], time: d[2]}; } %}
        | %aggregation %WS:* filter %WS:* temporalRelationship:? {% function (d) { return {aggregation: d[0], filter: d[2], time: d[4]}; } %}
        | %selection %WS:* filter %WS:* temporalRelationship:? {% function (d) { return {selection: d[0], filter: d[2], time: d[4]}; } %}
-       | %relationship %WS:* filter %WS:* %conjunctionAnd %WS:* filter %WS:* temporalRelationship:? {% function (d) { return {relationship: d[0], filter1: d[2], filter2: d[6], time: d[8]}; } %}
-       | existenceQuery %WS:* temporalRelationship:? {% function (d) { return {existence: d[0], time: d[2]}; } %}
+       | %comparison %WS:* filter %WS:* %conjunctionAnd %WS:* filter %WS:* temporalRelationship:? {% function (d) { return {comparison: d[0], filter1: d[2], filter2: d[6], time: d[8]}; } %}
+       | searchQuery %WS:* temporalRelationship:? {% function (d) { return {search: d[0], time: d[2]}; } %}
 
-existenceQuery -> %WS:* %existence %WS:* filter %WS:* {% function (d) { return {existence: d[1], filter: d[3]}; } %}
-                | %WS:* existenceQuery %WS:* %conjunctionAnd %WS:* existenceQuery %WS:* {% function (d) { return {left: d[1], conjunction: d[3], right: d[5]}; } %}
+searchQuery -> %WS:* %search %WS:* filter %WS:* {% function (d) { return {search: d[1], filter: d[3]}; } %}
+                | %WS:* searchQuery %WS:* %conjunctionAnd %WS:* searchQuery %WS:* {% function (d) { return {left: d[1], conjunction: d[3], right: d[5]}; } %}
 
 filter -> %lparen expression %rparen {% function (d) { return {expression: d[1]}; } %}
 
