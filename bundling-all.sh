@@ -3,7 +3,7 @@ npm install --save-dev webpack webpack-cli
 npm install --save-dev html-loader css-loader style-loader html-webpack-plugin mini-css-extract-plugin
 
 echo "Bunding GHDM Data"
-cd ./HeraldDemo/ghdm-data/
+cd ./ghdm-data/
 npx webpack
 
 echo "Bunding GHDM UI"
