@@ -597,6 +597,7 @@ function parseFilter(observations, query) {
       
       let resultValue;
       let resultUnit;
+      let resultIsNumeric;
       
       function validateUnit(unit) {
         return (!unit || unit.trim() === "") ? "Unknown" : unit;
@@ -608,14 +609,17 @@ function parseFilter(observations, query) {
         case 'RATIO BETWEEN':
           resultValue = value1 / value2;
           resultUnit = "(" + unit1 + ") / (" + unit2 + ")";
+          resultIsNumeric = obs1.isNumeric || obs2.isNumeric;
           break;
         case 'DIFFERENCE BETWEEN':
           resultValue = value1 - value2;
           resultUnit = (unit1 === unit2) ? unit1 : "(" + unit1 + ") - (" + unit2 + ")";
+          resultIsNumeric = obs1.isNumeric || obs2.isNumeric;
           break;
         case 'EQUALITY OF':
           resultValue = value1 === value2;
           resultUnit = "Boolean";
+          resultIsNumeric = false;
           break;
         default:
           throw new Error('Invalid relationship type: ' + relationship);
@@ -624,7 +628,7 @@ function parseFilter(observations, query) {
       return new QueryableObservation(obs1.label,
                                       obs1.start < obs2.start ? obs1.start : obs2.start,
                                       obs1.end > obs2.end ? obs1.end : obs2.end,
-                                      obs1.isNumeric || obs2.isNumeric,
+                                      resultIsNumeric,
                                       resultValue,
                                       resultUnit);
     }
