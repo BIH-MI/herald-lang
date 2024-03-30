@@ -20,8 +20,8 @@ function getHeraldLexer(ignoreErrors = false) {
        field: ['LABEL', 'VALUE', 'UNIT', 'START', 'END', 'NUMERIC'],
        aggregation: ['AVERAGE', 'COUNT', 'SUM', 'MIN', 'MAX', 'MOST FREQUENT'],
        selection: ['FIRST', 'LAST', 'ANY'],
-       comparison: ['RATIO BETWEEN', 'DIFFERENCE BETWEEN', 'EQUALITY OF'],
-       search: ['EXISTS', 'NOT EXISTS'],
+       relationship: ['RATIO BETWEEN', 'DIFFERENCE BETWEEN', 'EQUALITY OF'],
+       existence: ['EXISTS', 'NOT EXISTS'],
        temporalRelationship: ['BEFORE', 'AFTER', 'APART FROM', 'CLOSE TO', 'BEFORE AND CLOSE TO', 'AFTER AND CLOSE TO'],
        temporalRelationshipConnector: ['BY'],
        temporalUnit: ['DAYS', 'WEEKS', 'MONTHS', 'YEARS', 'DAY', 'WEEK', 'MONTH', 'YEAR'],
@@ -45,8 +45,8 @@ const heraldTokenColorMap = new Map([
    ['field', '#6a5acd'], // Slate blue for fields
    ['aggregation', '#4682b4'], // Steel blue
    ['selection', '#4682b4'], // Steel blue for selections
-   ['comparison', '#4682b4'], // Steel blue
-   ['search', '#4682b4'], // Steel blue
+   ['relationship', '#4682b4'], // Steel blue
+   ['existence', '#4682b4'], // Steel blue
    ['temporalRelationship', '#b22222'], // Firebrick for temporal relationships
    ['temporalRelationshipConnector', '#da70d6'], // Orchid
    ['temporalUnit', '#808000'] // Olive for temporal units

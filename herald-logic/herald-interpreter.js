@@ -572,12 +572,12 @@ function parseFilter(observations, query) {
   }
   
   /** 
-   * Process comparison query
+   * Process relationship query
   */
-  function parseComparison(observations, query) {
+  function parseRelationship(observations, query) {
 
     query = unwrapExpression(query);
-    if (HERALD_DEBUG) console.log("Evaluate comparison query: " + JSON.stringify(query, null, 2));
+    if (HERALD_DEBUG) console.log("Evaluate relationship query: " + JSON.stringify(query, null, 2));
 
     function filterObservations(observations, filter, temporalRelationship) {
       return observations.filter((obs) => {
@@ -585,7 +585,7 @@ function parseFilter(observations, query) {
       });
     }
   
-    function applyComparison(obs1, obs2, comparison) {
+    function applyRelationship(obs1, obs2, relationship) {
       if (!obs1 || !obs2) return new NullObservation();
   
       const value1 = parseValue(obs1.value);
@@ -604,7 +604,7 @@ function parseFilter(observations, query) {
       let unit1 = validateUnit(obs1.unit);
       let unit2 = validateUnit(obs2.unit);
       
-      switch (String(comparison)) {
+      switch (String(relationship)) {
         case 'RATIO BETWEEN':
           resultValue = value1 / value2;
           resultUnit = "(" + unit1 + ") / (" + unit2 + ")";
@@ -618,7 +618,7 @@ function parseFilter(observations, query) {
           resultUnit = "Boolean";
           break;
         default:
-          throw new Error('Invalid comparison type: ' + comparison);
+          throw new Error('Invalid relationship type: ' + relationship);
       }
   
       return new QueryableObservation(obs1.label,
@@ -635,44 +635,44 @@ function parseFilter(observations, query) {
     const obs1 = filteredObservations1.length > 0 ? filteredObservations1[0] : null;
     const obs2 = filteredObservations2.length > 0 ? filteredObservations2[0] : null;
   
-    return applyComparison(obs1, obs2, query.comparison);
+    return applyRelationship(obs1, obs2, query.relationship);
   }
 
   /**
-   * Perform search query
+   * Perform existence query
    */
-  function parseSearch(observations, query) {
+  function parseExistence(observations, query) {
 
     query = unwrapExpression(query);
-    if (HERALD_DEBUG) console.log("Evaluate search query: " + JSON.stringify(query, null, 2));
+    if (HERALD_DEBUG) console.log("Evaluate existence query: " + JSON.stringify(query, null, 2));
 
-    function evaluateSearch(obsList, searchFilter, temporalRelationship, search) {
+    function evaluateExistence(obsList, existenceFilter, temporalRelationship, existence) {
       const exists = obsList.filter((obs) => {
-        return evaluateFilterExpression(searchFilter, obs) && (temporalRelationship ? evaluateTemporalRelationship(obs, temporalRelationship, observations) : true);
+        return evaluateFilterExpression(existenceFilter, obs) && (temporalRelationship ? evaluateTemporalRelationship(obs, temporalRelationship, observations) : true);
       }).length > 0;
-      if (search.value === 'EXISTS') {
+      if (existence.value === 'EXISTS') {
         return exists;
-      } else if (search.value === 'NOT EXISTS') {
+      } else if (existence.value === 'NOT EXISTS') {
         return !exists;
       } else {
-        throw new Error("Unexpected search keyword: " + search.value);
+        throw new Error("Unexpected existence keyword: " + existence.value);
       }
     }
   
-    function applySearchQuery(searchQuery, temporalRelationship) {
-      if (searchQuery.search) {
-        return evaluateSearch(observations, searchQuery.filter, temporalRelationship, searchQuery.search);
-      } else if (searchQuery.left && searchQuery.conjunction) {
-        const leftResult = applySearchQuery(searchQuery.left, temporalRelationship);
-        const rightResult = applySearchQuery(searchQuery.right, temporalRelationship);
+    function applyExistenceQuery(existenceQuery, temporalRelationship) {
+      if (existenceQuery.existence) {
+        return evaluateExistence(observations, existenceQuery.filter, temporalRelationship, existenceQuery.existence);
+      } else if (existenceQuery.left && existenceQuery.conjunction) {
+        const leftResult = applyExistenceQuery(existenceQuery.left, temporalRelationship);
+        const rightResult = applyExistenceQuery(existenceQuery.right, temporalRelationship);
         return leftResult && rightResult;
       }
   
-      throw new Error("Invalid search query format");
+      throw new Error("Invalid existence query format");
     }
   
-    const value = applySearchQuery(query.search, query.time) ? "true" : "false";
-    const label = "Search result";
+    const value = applyExistenceQuery(query.existence, query.time) ? "true" : "false";
+    const label = "Existence result";
     const unit = "Boolean";
     const start = observations && observations.length > 0 ? observations.reduce((min, obs) => obs.start < min ? obs.start : min, observations[0].start) : Date();
     const end = observations && observations.length > 0 ? observations.reduce((max, obs) => obs.end > max ? obs.end : max, observations[0].end) : Date();
@@ -689,7 +689,7 @@ function parseFilter(observations, query) {
  * Check if this is a filter query
  */
 function isFilterQuery(parsedResult) {
-    return parsedResult.hasOwnProperty('filter') && !parsedResult.hasOwnProperty('aggregation') && !parsedResult.hasOwnProperty('selection') && !parsedResult.hasOwnProperty('comparison') && !parsedResult.hasOwnProperty('search');
+    return parsedResult.hasOwnProperty('filter') && !parsedResult.hasOwnProperty('aggregation') && !parsedResult.hasOwnProperty('selection') && !parsedResult.hasOwnProperty('relationship') && !parsedResult.hasOwnProperty('existence');
   }
   
  /**
@@ -707,17 +707,17 @@ function isFilterQuery(parsedResult) {
   }
   
   /**
-   * Check if is a comparison query
+   * Check if is a relationship query
    */
-  function isComparisonQuery(parsedResult) {
-    return parsedResult.hasOwnProperty('comparison');
+  function isRelationshipQuery(parsedResult) {
+    return parsedResult.hasOwnProperty('relationship');
   }
 
   /**
-   * Check if it is an search query
+   * Check if it is an existence query
    */
-  function isSearchQuery(parsedResult) {
-    return parsedResult.hasOwnProperty('search');
+  function isExistenceQuery(parsedResult) {
+    return parsedResult.hasOwnProperty('existence');
   }
 
   /**
@@ -730,10 +730,10 @@ function isFilterQuery(parsedResult) {
       return parseAggregation(observations, query);
     } else if (isSelectionQuery(query)) {
       return parseSelection(observations, query);
-    } else if (isComparisonQuery(query)) {
-      return parseComparison(observations, query);
-    } else if (isSearchQuery(query)) {
-      return parseSearch(observations, query);
+    } else if (isRelationshipQuery(query)) {
+      return parseRelationship(observations, query);
+    } else if (isExistenceQuery(query)) {
+      return parseExistence(observations, query);
     } else {
       throw new Error("Unknown query type");
     }
