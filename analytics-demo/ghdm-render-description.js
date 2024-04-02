@@ -269,3 +269,12 @@ function renderObservations(rows, header, cohortDiv) {
     }
   });
 }
+
+function createNoDataDiv() {
+  const noDataDiv = document.createElement('div');
+  noDataDiv.innerText = 'Not enough data';
+  noDataDiv.style.textAlign = 'center';
+  noDataDiv.style.padding = '20px';
+  return noDataDiv;
+}
+
