@@ -87,6 +87,11 @@ function renderAgeDistribution(rows, header, cohortDiv) {
       marker: {
         color: 'steelblue',
       },
+      xbins: {
+        start: 0,  // Assuming ages start at 0, adjust as needed
+        end: 120,  // Assuming ages go up to 120, adjust as needed
+        size: 5  // This sets the bin width
+      },
     },
   ];
 
@@ -101,10 +106,14 @@ function renderAgeDistribution(rows, header, cohortDiv) {
   };
 
   const config = { responsive: true };
-
-  const agePlotDiv = document.createElement('div');
-  document.getElementById(cohortDiv).appendChild(agePlotDiv);
-  Plotly.newPlot(agePlotDiv, data, layout, config);
+  if (!ages.length) {
+    const noDataDiv = createNoDataDiv();
+    document.getElementById(cohortDiv).appendChild(noDataDiv);
+  } else {
+    const agePlotDiv = document.createElement('div');
+    document.getElementById(cohortDiv).appendChild(agePlotDiv);
+    Plotly.newPlot(agePlotDiv, data, layout, config);
+  }
 }
 
 /**
