@@ -27,44 +27,100 @@
  * @param {*} outputDivId 
  */
 function renderDescriptiveStatistics(cohortLabels, tables, outputDivId) {
-  
   const outputDiv = document.getElementById(outputDivId);
   outputDiv.innerHTML = "";
-  const cohortContainer = document.createElement("div");
-  cohortContainer.style.display = "flex";
-  outputDiv.appendChild(cohortContainer);
 
-   tables.forEach((table, index) => {
-    const cohortLabel = cohortLabels[index];
-    const header = table[0];
-    const rows = table.slice(1);
-	
-    const cohortDiv = document.createElement("div");
-    cohortDiv.style.flex = "1";
-    cohortDiv.style.padding = "0 10px";
-    cohortDiv.style.boxSizing = "border-box";
-	  cohortDiv.id = `cohort-${index}`; // Set a unique id for each cohortDiv
-
-    const title = document.createElement("h2");
-    title.innerText = `Cohort: ${cohortLabel}`;
-    cohortDiv.appendChild(title);
-
-    cohortContainer.appendChild(cohortDiv);
-	
-    if (header.includes("Age")) {
-      renderAgeDistribution(rows, header, cohortDiv.id);
-    }
-
-    if (header.includes("Sex")) {
-       renderSexDistribution(rows, header, cohortDiv.id);
-    }
-     
-    renderObservations(rows, header, cohortDiv.id);
-  });
+  // Step 1: Identify all unique headers and create checkboxes
+  const controlsDiv = document.createElement("div");
+  controlsDiv.id = "controls";
   
-  // I could not find a better way to make sure that the plot.ly plots are all nicely layed out
-  const event = new Event('resize');
-  window.dispatchEvent(event);
+  const instructionText = document.createElement("h5");
+  instructionText.innerText = "Select observation(s) to visualize";
+  controlsDiv.appendChild(instructionText);
+
+  const uniqueHeaders = new Set(tables.flatMap(table => table[0]));
+  uniqueHeaders.forEach(header => {
+    if (header === "Patient ID") {
+      return;
+    }
+  
+    const formCheckDiv = document.createElement("div");
+    formCheckDiv.className = "form-check";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "form-check-input";
+    checkbox.checked = true;
+    checkbox.onchange = () => renderData();
+    checkbox.id = `${header.replace(/\s+/g, '')}Checkbox`;
+    checkbox.setAttribute("data-header", header);
+
+    const label = document.createElement("label");
+    label.className = "form-check-label";
+    label.setAttribute("for", checkbox.id);
+    label.innerText = header;
+
+    formCheckDiv.appendChild(checkbox);
+    formCheckDiv.appendChild(label);
+    controlsDiv.appendChild(formCheckDiv);
+    lastFormCheckDiv = formCheckDiv;
+  });
+  if (lastFormCheckDiv) {
+    lastFormCheckDiv.style.paddingBottom = '40px'; // Add padding to the last checkbox
+  }
+
+  outputDiv.appendChild(controlsDiv);
+
+  // Step 2: Render data based on checked headers
+  function renderData() {
+    const selectedHeaders = new Set(
+      Array.from(document.querySelectorAll("#controls input:checked")).map(input => input.getAttribute("data-header"))
+    );
+    const cohortContainer = document.createElement("div");
+    cohortContainer.style.display = "flex";
+    
+    // Clear previous data displays before re-rendering
+    const existingContainer = document.getElementById("data-container");
+    if (existingContainer) outputDiv.removeChild(existingContainer);
+
+    cohortContainer.id = "data-container";
+    outputDiv.appendChild(cohortContainer);
+
+    tables.forEach((table, index) => {
+      if (!selectedHeaders.size) return; // Don't render if no headers are selected
+
+      const cohortLabel = cohortLabels[index];
+      const header = table[0];
+      const rows = table.slice(1);
+      
+      const cohortDiv = document.createElement("div");
+      cohortDiv.style.flex = "1";
+      cohortDiv.style.padding = "0 10px";
+      cohortDiv.style.boxSizing = "border-box";
+      cohortDiv.id = `cohort-${index}`;
+      
+      const title = document.createElement("h2");
+      title.innerText = `Cohort: ${cohortLabel}`;
+      cohortDiv.appendChild(title);
+      cohortContainer.appendChild(cohortDiv);
+
+      if (selectedHeaders.has("Age")) {
+        renderAgeDistribution(rows, header, cohortDiv.id);
+      }
+
+      if (selectedHeaders.has("Sex")) {
+        renderSexDistribution(rows, header, cohortDiv.id);
+      }
+
+      renderObservations(rows, header, cohortDiv.id, selectedHeaders);
+    });
+
+    // Resize event for Plotly plots layout adjustment
+    const event = new Event('resize');
+    window.dispatchEvent(event);
+  }
+
+  renderData(); // Initial rendering
 }
 
 /**
@@ -96,13 +152,14 @@ function renderAgeDistribution(rows, header, cohortDiv) {
   ];
 
   const layout = {
+    title: 'Age distribution',
     xaxis: {
       title: 'Age',
       range: [0, 120], // Set the x-axis range from 0 to 120
 	  fixedrange: true,
     },
     yaxis: { title: 'Percentage (%)' },
-	height: 500,
+	  height: 500,
   };
 
   const config = { responsive: true };
@@ -169,42 +226,43 @@ function renderSexDistribution(rows, header, cohortDiv) {
  * @param {*} rows 
  * @param {*} header 
  * @param {*} cohortDiv 
+ * @param {*} selectedHeaders 
  */
-function renderObservations(rows, header, cohortDiv) {
+function renderObservations(rows, header, cohortDiv, selectedHeaders) {
   
   // Collect data
-  const columnData = [];
+  const columnData = []; 
   rows.forEach(row => {
     row.forEach((observation, index) => {
-      if (header[index] === "Age" || header[index] === "Sex" || header[index] === "Patient ID") {
+      const headerName = header[index];
+
+      if (!selectedHeaders.has(headerName) || ["Age", "Sex", "Patient ID"].includes(headerName)) {
         return;
       }
 
       if (!columnData[index]) {
         columnData[index] = {
-          header: header[index],
+          header: headerName,
           numericValues: [],
           nonNumericValues: [],
         };
       }
 
-      if (observation) {
-        if (observation.isNumeric) {
-          columnData[index].numericValues.push(observation.value);
-        } else {
-          columnData[index].nonNumericValues.push(observation.value);
-        }
+      if (observation && observation.isNumeric) {
+        columnData[index].numericValues.push(observation.value);
+      } else if (observation) {
+        columnData[index].nonNumericValues.push(observation.value);
       }
     });
   });
-  
+
   // Plot
   columnData.forEach(({header, numericValues, nonNumericValues}) => {
-
+    const dataDiv = document.getElementById(cohortDiv);
+    
     // Always prefer numeric data, if there is one, and do non-numeric only if no numeric data exists
     if (numericValues.length > 0) {
-        
-      const data = [{
+      const numericData = {
         type: 'violin',
         y: numericValues,
         box: { visible: true },
@@ -213,77 +271,75 @@ function renderObservations(rows, header, cohortDiv) {
         pointpos: -1.8,
         line: { color: 'steelblue' },
         legendgroup: 'hidden', // Add this line to assign a legend group
-            showlegend: false // Add this line to hide the legend
-      }];
+        showlegend: false // Add this line to hide the legend
+      };
 
       const layout = {
-        xaxis: { title: header },
+        title: header,
         yaxis: { title: 'Value' },
         margin: { l: 50, r: 50, b: 50, t: 50 },
         height: 500,
       };
 
-      const config = { responsive: true };
-
-      if (!data[0].y || data[0].y.length === 0) {
-          const noDataDiv = createNoDataDiv();
-          document.getElementById(cohortDiv).appendChild(noDataDiv);
+      if (numericData.y && numericData.y.length > 0) {
+        const plotDiv = document.createElement('div');
+        dataDiv.appendChild(plotDiv);
+        Plotly.newPlot(plotDiv, [numericData], layout, { responsive: true });
       } else {
-          const plotDiv = document.createElement('div');
-          document.getElementById(cohortDiv).appendChild(plotDiv);
-          Plotly.newPlot(plotDiv, data, layout, config);
+        dataDiv.appendChild(createNoDataDiv());
       }
-
-	  // Always prefer numeric data, if there is one, and do non-numeric only if no numeric data exists
     } else if (nonNumericValues.length > 0) {
-        
-        const categories = Array.from(new Set(nonNumericValues));
-        const totalValues = nonNumericValues.length;
-        const counts = d3.rollup(nonNumericValues, v => (v.length / rows.length) * 100, d => d);
+      const categories = Array.from(new Set(nonNumericValues));
+      const counts = d3.rollup(nonNumericValues, v => v.length, d => d);
 
-        const data = [
-          {
-            x: categories,
-            y: Array.from(counts.values()),
-            type: 'bar',
-            marker: {
-              color: 'steelblue',
-            },
-          },
-        ];
+      const categoryData = {
+        x: categories,
+        y: Array.from(categories, category => counts.get(category)),
+        type: 'bar',
+        marker: {
+          color: 'steelblue',
+        },
+      };
 
-        const layout = {
-          xaxis: { title: header },
-          yaxis: { title: 'Percentage (%)' },
-          height: 500,
-        };
+      const layout = {
+        title: header,
+        yaxis: { title: 'Percentage (%)' },
+        height: 500,
+      };
 
-        const config = { responsive: true };
-
-        if (!data[0].y || data[0].y.length === 0) {
-          const noDataDiv = createNoDataDiv();
-          document.getElementById(cohortDiv).appendChild(noDataDiv);
-        
-        } else {
-
-          const plotDiv = document.createElement('div');
-          document.getElementById(cohortDiv).appendChild(plotDiv);
-          Plotly.newPlot(plotDiv, data, layout, config);
-        }
-    
-    // Render missing data div
+      if (categoryData.x && categoryData.x.length > 0) {
+        const plotDiv = document.createElement('div');
+        dataDiv.appendChild(plotDiv);
+        Plotly.newPlot(plotDiv, [categoryData], layout, { responsive: true });
+      } else {
+        dataDiv.appendChild(createNoDataDiv());
+      }
     } else {
-      const noDataDiv = createNoDataDiv();
-      document.getElementById(cohortDiv).appendChild(noDataDiv);
+      // Handle the case where there is no data to display for this header
+      dataDiv.appendChild(createNoDataDiv());
     }
   });
 }
 
+
+/**
+ * 
+ * No data div
+ */
 function createNoDataDiv() {
   const noDataDiv = document.createElement('div');
   noDataDiv.innerText = 'Not enough data';
-  noDataDiv.style.textAlign = 'center';
-  noDataDiv.style.padding = '20px';
+  noDataDiv.className = 'alert alert-primary';
+  noDataDiv.setAttribute('role', 'alert');
+
+  noDataDiv.style.padding = '10px';
+  noDataDiv.style.margin = '100px 20px';
+  noDataDiv.style.display = 'flex';
+  noDataDiv.style.justifyContent = 'center';
+  noDataDiv.style.alignItems = 'center';
+  noDataDiv.style.minHeight = '300px';
+
   return noDataDiv;
 }
+
 
