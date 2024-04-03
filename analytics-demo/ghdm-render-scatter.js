@@ -27,58 +27,59 @@
  * @param {*} outputDivId 
  */
 function renderScatterPlots(cohortLabels, tables, outputDivId) {
-  
-  // Clear
+  // Clear the output div
   const outputDiv = document.getElementById(outputDivId);
   outputDiv.innerHTML = "";
 
-  // Prepare combo box
-  const comboBox = document.createElement("select");
+  // Prepare x-axis and y-axis select elements
+  const xAxisSelect = document.createElement("select");
+  const yAxisSelect = document.createElement("select");
+  xAxisSelect.className = 'form-control';
+  yAxisSelect.className = 'form-control';
 
-  // Collect combinations
+  //Populate x-axis and y-axis selects
   const indices = [...Array(tables[0][0].length).keys()].slice(1);
-  const combinations = [];
-  indices.forEach((_, i, arr) => {
-    arr.slice(i + 1).forEach((elem) => {
-      combinations.push([arr[i], elem]);
-    });
-  });
-
-  // Add to combo box
-  combinations.forEach(([xIndex, yIndex], comboIndex) => {
-    const cohortHasData = hasDataForCombination(tables, xIndex, yIndex);
-    if (cohortHasData.some((hasData) => hasData)) {
-      const xConcept = tables[0][0][xIndex];
-      const yConcept = tables[0][0][yIndex];
-
-      const option = document.createElement("option");
-      option.textContent = `${xConcept} vs ${yConcept}`;
-      option.value = comboIndex;
-      comboBox.appendChild(option);
+  // Map dropdown indices to data indices
+  const dropdownToDataIndexMap = {};
+  let numericIndex = 1;
+  indices.forEach((index) => {
+    const xOption = document.createElement("option");
+    const yOption = document.createElement("option");  
+    // only include numeric options in dropdown
+    let optionIsNumeric = false;
+    tables.forEach(table => {
+      for (let i = 1; i < table.length; i++) {
+        const observation = table[i][index];
+        if (observation && observation.isNumeric) {
+          optionIsNumeric = true;
+        }else if (observation && !observation.isNumeric){
+          optionIsNumeric = false;
+          return;
+        }
+      }
+    })
+    if (optionIsNumeric){
+      xOption.textContent = tables[0][0][index];
+      yOption.textContent = tables[0][0][index];
+      xOption.value = numericIndex;
+      yOption.value = numericIndex;
+      xAxisSelect.appendChild(xOption);
+      yAxisSelect.appendChild(yOption);
+      // Map the dropdown index to the actual data index
+      dropdownToDataIndexMap[numericIndex] = index;
+      numericIndex++;
     }
   });
+  
+  // Append select elements for x-axis and y-axis to the output div
+  outputDiv.appendChild(document.createTextNode("Select x axis"));
+  outputDiv.appendChild(xAxisSelect);
+  outputDiv.appendChild(document.createElement("br"));
+  outputDiv.appendChild(document.createTextNode("Select y axis"));
+  outputDiv.appendChild(yAxisSelect);
+  outputDiv.appendChild(document.createElement("br"));
 
-  // If no data, break
-  if (comboBox.children.length === 0) {
-    outputDiv.appendChild(GHDMUI.createNoDataAlert());
-    return; 
-  }
-
-  // Append combo embedded in bootstrap container for nice look
-  const comboBoxContainer = document.createElement("div");
-  comboBoxContainer.className = 'd-flex align-items-center border rounded p-2 mb-3';
-  outputDiv.appendChild(comboBoxContainer);
-  const label = document.createElement("span");
-  label.textContent = "Select a combination to visualize:";
-  label.className = 'mr-3';
-  label.style.whiteSpace = 'nowrap'; 
-  comboBoxContainer.appendChild(label);
-  comboBox.className = 'form-control flex-fill';
-  comboBox.id = `scatter-plot-combobox`;
-  comboBoxContainer.appendChild(comboBox);
-  outputDiv.appendChild(comboBoxContainer);
-
-  // Print headers
+  // Print headers for each table
   tables.forEach((table, i) => {
     const label = document.createElement("h3");
     label.textContent = `Scatter plots for ${cohortLabels[i]}`;
@@ -92,22 +93,24 @@ function renderScatterPlots(cohortLabels, tables, outputDivId) {
   // Default plot height
   const plotHeight = 500;
 
-  // React on changes
-  comboBox.addEventListener("change", (e) => {
-    const selectedComboIndex = parseInt(e.target.value, 10);
-    const [xIndex, yIndex] = combinations[selectedComboIndex];
+  // Function to update all plots based on selected indices
+  const updatePlots = () => {
+    const xIndex = dropdownToDataIndexMap[parseInt(xAxisSelect.value, 10)];
+    const yIndex = dropdownToDataIndexMap[parseInt(yAxisSelect.value, 10)];
     updateAllPlots(tables, cohortLabels, plotHeight, xIndex, yIndex);
-  });
+  };
 
-  // Find the first valid combination that has data
-  const firstValidComboIndex = combinations.findIndex(([xIndex, yIndex]) => hasDataForCombination(tables, xIndex, yIndex).some(hasData => hasData));
+  // Attach event listeners to select elements
+  xAxisSelect.addEventListener("change", updatePlots);
+  yAxisSelect.addEventListener("change", updatePlots);
 
-  // Display the first valid combination by default
-  if (firstValidComboIndex !== -1) {
-    const [xIndex, yIndex] = combinations[firstValidComboIndex];
-    updateAllPlots(tables, cohortLabels, plotHeight, xIndex, yIndex);
-  }
+  // Initialize the plot with the first index for x and the second for y (if possible)
+  xAxisSelect.value = indices[0];
+  yAxisSelect.value = indices.length > 1 ? indices[1] : indices[0];
+
+  updatePlots(); // Initial plot rendering
 }
+
 
 /**
  * Calculate plot data
