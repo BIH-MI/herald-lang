@@ -199,13 +199,66 @@ async function renderTimeToEvent(cohortLabels, tables, outputDivId) {
 		return; 
 	}
 
-	// Ask for index event
-	const indexEvent = await GHDMUI.showConceptSelectionModal('Please select an index event.', tables);
-	if (indexEvent === undefined) {
-		outputDiv.appendChild(createNoDataAlert());
-		return;
+	// Create select element for index event
+	const indexEventSelect = document.createElement("select");
+	indexEventSelect.className = 'form-control';
+
+	// Populate select with options
+	const indexEventOption = document.createElement("option");
+	indexEventOption.textContent = "Select index event";
+	indexEventOption.disabled = true;
+	indexEventOption.selected = true;
+	indexEventSelect.appendChild(indexEventOption);
+
+	let firstValidOptionValue = null;
+
+	// Populate select with index event options
+	for (let i = 1; i < tables[0][0].length; i++) {
+		const indexEventColumnName = tables[0][0][i];
+		if (indexEventColumnName !== "Age" && indexEventColumnName !== "Sex") {
+			const indexEventOption = document.createElement("option");
+			indexEventOption.textContent = indexEventColumnName;
+			indexEventOption.value = indexEventColumnName;
+			indexEventSelect.appendChild(indexEventOption);
+			if (!firstValidOptionValue) {
+                firstValidOptionValue = indexEventColumnName;
+            }
+		}
 	}
 
-	// Draw Kaplan Meier curves
-	visualizeKaplanMeierCurves(cohortLabels, tables, indexEvent, outputDivId);
+	// Append select element for index event to the output div
+	outputDiv.appendChild(document.createTextNode("Select index event"));
+	outputDiv.appendChild(indexEventSelect);
+	outputDiv.appendChild(document.createElement("br"));
+
+	// Attach event listener to the select box
+	indexEventSelect.addEventListener('change', function() {
+		const selectedEvent = indexEventSelect.value;
+		if (selectedEvent) {
+			// Find and remove the existing visualization, if it exists
+			const existingVisualization = document.getElementById('visualization');
+			if (existingVisualization) {
+				outputDiv.removeChild(existingVisualization);
+			}
+			// Create a container for the new visualization to keep it identifiable
+			const visualizationContainer = document.createElement('div');
+			visualizationContainer.id = 'visualization';
+			outputDiv.appendChild(visualizationContainer);
+			// Start rendering process within the new container
+			visualizeKaplanMeierCurves(cohortLabels, tables, selectedEvent, 'visualization');
+		} else {
+			// Handle case where no event is selected
+			const existingVisualization = document.getElementById('visualization');
+			if (existingVisualization) {
+				outputDiv.removeChild(existingVisualization);
+			}
+			outputDiv.appendChild(createNoDataAlert());
+		}
+	});
+
+	// Automatically select the first valid option and trigger the change event
+    if (firstValidOptionValue) {
+        indexEventSelect.value = firstValidOptionValue;
+        indexEventSelect.dispatchEvent(new Event('change'));
+    }
 }
