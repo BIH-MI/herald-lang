@@ -446,7 +446,8 @@ function initializeHeraldUI(cohorts, callback) {
 var HeraldUI = window.HeraldUI || {};
 Object.assign(HeraldUI, {
   initializeHeraldUI: initializeHeraldUI,
-  checkSpecBuildTables: checkSpecBuildTables
+  checkSpecBuildTables: checkSpecBuildTables,
+  setLabelAndQueryManually: setLabelAndQueryManually
 });
 window.HeraldUI = HeraldUI;
 

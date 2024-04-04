@@ -209,7 +209,7 @@ function bindExistenceQuery(modal, query) {
 
         // Create new row
         const lastKeywordFilterRow = modal.querySelector('.keywordFilterRow:last-child');
-        addExistenceQueryRow(lastKeywordFilterRow);
+        HeraldUI.addExistenceQueryRow(lastKeywordFilterRow);
         const newKeywordElement = lastKeywordFilterRow.querySelector('.existenceQueryKeywordSelect');
         const newFilterElement = lastKeywordFilterRow.querySelector('.existenceQueryFilterInput');
 

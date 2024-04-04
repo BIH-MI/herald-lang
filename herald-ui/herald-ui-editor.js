@@ -641,7 +641,8 @@ initHeraldQueryBuilderModal();
  */
 var HeraldUI = window.HeraldUI || {};
 Object.assign(HeraldUI, {
-  showHeraldQueryModal: showHeraldQueryModal
+  showHeraldQueryModal: showHeraldQueryModal,
+  addExistenceQueryRow: addExistenceQueryRow
 });
 window.HeraldUI = HeraldUI;
 
