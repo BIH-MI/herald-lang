@@ -8,8 +8,6 @@ This repository, "herald-lang," houses the core functionalities of HERALD.
 
 ## Repository Contents
 
-## Repository Contents
-
 - `herald-lang`: This module forms the backbone of the HERALD query language. It encompasses the language's grammar, parser, and lexer, providing the essential components that define and interpret HERALD's syntax and commands.
 
 - `herald-ui`: This component is dedicated to the user interface aspects of HERALD. It includes an intuitive graphical query editor, facilities for query binding, and tools for browsing and interacting with concept hierarchies, all designed to enhance the user experience in constructing and visualizing queries.
