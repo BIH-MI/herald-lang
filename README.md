@@ -4,7 +4,7 @@
 
 HERALD stands for Human-centric Extraction for Research and Analysis of Longitudinal Data. It is a specialized query language designed to empower medical researchers in analyzing longitudinal health data. The core aim of HERALD Lang is to facilitate the extraction and aggregation of data into cross-sectional tables for statistical analyses. The design of HERALD's syntax is intuitive, closely mirroring natural language to enhance user accessibility and efficiency. The prototype implementation consists of a HERALD excecution engine, combined with a  graphical query editor, and paired with analytics functionalities to showcase the capabilities of the HERALD query language. 
 
-This repository, "herald-lang," houses the core functionalities of HERALD.
+This repository houses the core functionalities of HERALD.
 
 ## Repository Contents
 
