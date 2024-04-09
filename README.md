@@ -4,17 +4,17 @@
 
 HERALD stands for Human-centric Extraction for Research and Analysis of Longitudinal Data. It is a specialized query language designed to empower medical researchers in analyzing longitudinal health data. The core aim of HERALD Lang is to facilitate the extraction and aggregation of data into cross-sectional tables for statistical analyses. The design of HERALD's syntax is intuitive, closely mirroring natural language to enhance user accessibility and efficiency. The prototype implementation consists of a HERALD excecution engine, combined with a  graphical query editor, and paired with analytics functionalities to showcase the capabilities of the HERALD query language. 
 
-This repository houses the core functionalities of HERALD.
+This repository, "herald-lang," houses the core functionalities of HERALD.
 
 ## Repository Contents
 
-- `herald-lang`: This module forms the backbone of the HERALD query language. It encompasses the language's grammar, parser, and lexer, providing the essential components that define and interpret HERALD's syntax and commands.
+- `herald-lang`: This module forms the core of the HERALD query language. It encompasses the language's grammar, parser, and lexer, providing the essential components that define and interpret HERALD's syntax and commands.
 
-- `herald-ui`: This component is dedicated to the user interface aspects of HERALD. It includes an intuitive graphical query editor, facilities for query binding, and tools for browsing and interacting with concept hierarchies, all designed to enhance the user experience in constructing and visualizing queries.
+- `herald-ui`: This component is dedicated to the user interface aspects of HERALD. It includes an intuitive graphical query editor, facilities for query binding, and tools for browsing and interacting with concept hierarchies.
 
-- `ghdm-data`: This module incorporates the generic data model integral to HERALD. It supports various data loading and wrangling capabilities, enabling users to efficiently work with and adapt their data within the HERALD framework.
+- `ghdm-data`: This module incorporates the generic data model integral to HERALD and supports various data loading and wrangling functionalities.
 
-- `ghdm-ui`: Complementing the core functionalities, this module houses additional UI elements and features that, while not directly linked to the HERALD query language itself, enhance the overall usability and flexibility of interacting with the HERALD system.
+- `ghdm-ui`: This module houses additional UI elements, such as cohort selection and various modals.
 
 
 ## Bundling Instructions
@@ -45,14 +45,10 @@ You can also find us at our working group's website [mi.bihealth.org](https://mi
 
 ## License
 
-&copy; 2024 Berlin Institute of Health
+&copy; 2023-2024 Berlin Institute of Health
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
-## External Libraries
-
-HERALD uses external libraries. Their licenses are listed in the respective folders.
