@@ -12,8 +12,8 @@ echo "Bunding GHDM UI"
 cd ../ghdm-ui/
 npx webpack
 
-echo "Bunding Herald Logic"
-cd ../herald-logic/
+echo "Bunding Herald Core"
+cd ../herald-core/
 npx webpack
 
 echo "Bunding Herald UI"
