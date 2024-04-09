@@ -10,10 +10,10 @@ module.exports = {
   ],
   output: {
     // We might be able to change this in a way to place the generated fie directly into the folder, where the file is needed.
-    path: path.resolve(__dirname, 'dist'),  // adjust the path if necessary
+    path: path.resolve(__dirname, 'dist'),
     filename: `${pkg.name}.js`,
-    library: 'herald-logic',   // this will expose the bundled export under the name 'ghdm'
-    libraryTarget: 'window' // this will make it a variable in global window scope
+    library: 'herald-logic',   // This will expose the bundled export under the name 'ghdm'
+    libraryTarget: 'window' // This will make it a variable in global window scope
   },
   mode: 'none',
   plugins: [

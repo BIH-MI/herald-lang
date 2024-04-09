@@ -41,7 +41,7 @@ function addListenerAutocomplete() {
 			// Open modal
 			const {value, field} = await HeraldUI.openFieldSelectionModal();
 
-			// if value set
+			// If value set
 			if (value && field) {
 				// Text to set
 				let text = field + ' = "' + value.replace(/"/g, '\\"') + '"';

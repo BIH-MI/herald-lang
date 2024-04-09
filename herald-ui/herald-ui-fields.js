@@ -213,13 +213,11 @@ function initializeFieldSelectionTree(cohorts) {
 
     // Call function
     cohorts.forEach(cohort => {
-        //if (selectedCohorts === null || selectedCohorts.includes(cohort.label)) {
         cohort.patients.forEach(patient => {
             for (concept of patient.concepts) {
                 traverse(treeContainer, concept, '');
             }
         });
-        //}
     });
 
 
