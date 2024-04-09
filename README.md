@@ -22,8 +22,8 @@ This repository, "herald-lang," houses the core functionalities of HERALD.
 To bundle HERALD-Lang for deployment or distribution, follow these steps:
 
 1. Run the `bundling-all.sh` script in your console. This script initiates the webpack bundling process.
-2. The script will install respective dependencies and create bundled files in the `dist` folders.
-3. Copy the bundled files from the `dist` folders to the `src` folder in the [herald-demo](https://github.com/BIH-MI/herald-demo) repository to use them in the live demo and see HERALD in action.
+2. The script will install respective dependencies and create bundled files in a `dist` folder.
+3. Copy the bundled files from the `dist` folder to the `src` folder in the [herald-demo](https://github.com/BIH-MI/herald-demo) repository to use them in the live demo and see HERALD in action.
 
 ## Live demo
 
