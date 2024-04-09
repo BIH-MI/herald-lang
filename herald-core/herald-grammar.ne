@@ -15,16 +15,40 @@ existenceQuery -> %WS:* %existence %WS:* filter %WS:* {% function (d) { return {
 
 filter -> %lparen expression %rparen {% function (d) { return {expression: d[1]}; } %}
 
-expression -> %WS:* fieldExpression %WS:* {% function (d) { return {expression: d[1]}; } %}
-            | %WS:* expression %WS:* conjunction %WS:* expression %WS:* {% function (d) { return {left: d[1], conjunction: d[3], right: d[5]}; } %}
-            | %WS:* %lparen expression %rparen %WS:* {% function (d) { return {expression: d[2]}; } %}
+expression -> %WS:* orExpression %WS:* {% function(d) { return d[1]; } %}
+
+orExpression -> %WS:* andExpression %WS:* 
+              ( %WS:* %conjunctionOr %WS:* andExpression %WS:*
+              ):* {% function(d) { 
+                      var result = d[1]; // andExpression
+					  for (var i = 0; i < d[3].length; i++) { // d3 is optional groups in brackets, will be empty array if not present
+					      var group = d[3][i]; // Next group
+					      var conjunction = group[1]; // %conjunctionOr
+					      var rightExpression = group[3]; // andExpression
+					      result = {left: result, conjunction: conjunction, right: rightExpression};
+					  }
+					  return result;
+				   } %}
+
+andExpression -> %WS:* baseExpression %WS:* 
+               ( %WS:* %conjunctionAnd %WS:* baseExpression %WS:*
+               ):* {% function(d) { 
+                        var result = d[1]; // baseExpression 
+                        for (var i = 0; i < d[3].length; i++) { // d3 is optional groups in brackets, will be empty array if not present
+	                        var group = d[3][i]; // Next group
+	                        var conjunction = group[1]; // %conjunctionAnd
+						    var rightExpression = group[3]; // baseExpression
+                            result = {left: result, conjunction: conjunction, right: rightExpression};
+                        }
+                        return result; 
+                    } %}
+
+baseExpression -> %WS:* %lparen expression %rparen %WS:* {% function (d) { return {expression: d[2]}; } %}
+                | %WS:* fieldExpression %WS:* {% function (d) { return {expression: d[1]}; } %}
 
 fieldExpression -> %field %WS:* %comparator %WS:* %string {% function (d) { return {field: d[0], comparator: d[2], value: d[4]}; } %}
                  | %string %WS:* %comparator %WS:* %string {% function (d) { return {label: d[0], comparator: d[2], value: d[4]}; } %}
                  | %string {% function (d) { return {label: d[0]}; } %}
-
-conjunction -> %conjunctionAnd {% function (d) { return d[0]; } %}
-             | %conjunctionOr {% function (d) { return d[0]; } %}
 
 temporalRelationship -> %temporalRelationship %WS:* filter {% function (d) { return {temporalRelationship: d[0], filter: d[2]}; } %}
                       | %temporalRelationship %WS:* %date {% function (d) { return {temporalRelationship: d[0], date: d[2]}; } %}

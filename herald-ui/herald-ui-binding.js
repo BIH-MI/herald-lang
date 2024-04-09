@@ -260,37 +260,54 @@ function bindQuery(modal, query) {
 }
 
 /**
- * Try a certain token combination
+ * Try parsing with a certain sliding window size
  */
-function tryTokenCombinations(tokens, index, parser, failCount, maxFail, parsedTokens, onSuccess) {
+function tryWithSlidingWindow(tokens, windowSize) {
 
-  // Success
-  if (index >= tokens.length) {
-    return;
-  }
+  // Generate each version with the sliding window
+  outer: for (let start = 0; start <= tokens.length - windowSize; start++) {
 
-  // Prepare parsing
-  const token = tokens[index];
-  const stringToken = token.text || token.value;
-  const checkpoint = parser.save();
+    console.log("Sliding window " + start + " of size " + windowSize + " on " + tokens.length + " tokens");
 
-  // Try with the current token
-  try {
-    parser.feed((index > 0 ? ' ' : '') + stringToken);
+    // Build query to parse
+    let query = "";
+
+    // Feed part before the window
+    for (let index = 0; index < start; index++) {
+      const token = tokens[index];
+      const stringToken = token.text || token.value;
+      query += (query.length > 0 ? ' ' : '') + stringToken;
+    }
+    
+    // Feed part after the window
+    for (let index = start + windowSize; index < tokens.length; index++) {
+      const token = tokens[index];
+      const stringToken = token.text || token.value;
+      query += (query.length > 0 ? ' ' : '') + stringToken;
+    }
+
+    // Create parser
+    const parser = new nearley.Parser(nearley.Grammar.fromCompiled(Herald.grammar));
+    try {
+      // Parse
+      parser.feed(query);
+    } catch (err) {
+      // We can directly move to the next window position
+      continue outer;
+    }
+
+    // Check if we have a result
     if (parser.results[0]) {
-      onSuccess(parsedTokens + 1, parser.results[0]);
+      console.log("Number of available parses: " + parser.results.length);
+      return parser.results[0];
     }
-    tryTokenCombinations(tokens, index + 1, parser, 0, maxFail, parsedTokens + 1, onSuccess);
-  } catch (err) {
-    parser.restore(checkpoint);
-    if (failCount < maxFail) {
-      // Try without the current token if failCount is less than maxFail
-      tryTokenCombinations(tokens, index + 1, parser, failCount + 1, maxFail, parsedTokens, onSuccess);
-    } else {
-      // Reset failCount and continue trying tokens
-      tryTokenCombinations(tokens, index + 1, parser, 0, maxFail, parsedTokens, onSuccess);
-    }
+
+    // If window size is zero, we just need to do this once, because there is no window to skip
+    if (windowSize == 0) break;
   }
+
+  // No result
+  return null;
 }
 
 /**
@@ -305,27 +322,21 @@ function getParseableSubset(input) {
   lexer.reset(input);
   const tokens = Array.from(lexer).filter((token) => token.type !== "error" && token.type !== "WS");
 
-  // Initialize the parser
-  const parser = new nearley.Parser(nearley.Grammar.fromCompiled(Herald.grammar));
+  // Iterate over window sizes
+  const maxWindowSize = Math.min(tokens.length - 1, 10);
+  for (let windowSize = 0; windowSize <= maxWindowSize; windowSize++) {
 
-  // Store best result
-  let bestResult = null;
-  let bestResultTokenCount = -1;
+    // Try with this window size
+    let partialParse = tryWithSlidingWindow(tokens, windowSize);
 
-  // Callback function to handle successful parsing
-  function onSuccess(tokenCount, result) {
-    if (tokenCount > bestResultTokenCount) {
-      bestResult = result;
-      bestResultTokenCount = tokenCount;
+    // If we found something, it is the largest parseable subset
+    if (partialParse) {
+      return partialParse;
     }
   }
 
-  // Try all token combinations with a maximum of consecutive failed tokens
-  let maxConsecutiveFailedTokens = 3;
-  tryTokenCombinations(tokens, 0, parser, 0, maxConsecutiveFailedTokens, 0, onSuccess);
-
-  // Return the result with the most tokens
-  return bestResult;
+  // We couldn't find a parse
+  return null;
 }
 
 /**
