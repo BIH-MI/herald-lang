@@ -12,11 +12,11 @@ echo "Bundling GHDM UI"
 cd ../ghdm-ui/
 npx webpack
 
-echo "Bundling Herald Core"
+echo "Bundling HERALD Core"
 cd ../herald-core/
 npx webpack
 
-echo "Bundling Herald UI"
+echo "Bundling HERALD UI"
 cd ../herald-ui/
 npx webpack
 
