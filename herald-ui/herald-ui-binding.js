@@ -69,7 +69,7 @@ function renderFilterString(filter) {
     } else if (filter.field && filter.comparator && filter.value) {
         return `${filter.field.value} ${filter.comparator.value} ${filter.value.value}`;
     } else if (filter.label && filter.comparator && filter.value) {
-        return `LABEL ${filter.comparator.value} ${filter.label.value} AND VALUE ${filter.comparator.value} ${filter.value.value}`;
+        return `LABEL = ${filter.label.value} AND VALUE ${filter.comparator.value} ${filter.value.value}`;
     } else if (filter.label) {
         return `LABEL = ${filter.label.value}`;
     } else {
