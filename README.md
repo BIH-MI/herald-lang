@@ -40,7 +40,6 @@ If you have questions or problems, we would like to invite you to open an issue 
 | [Lena Baum](https://github.com/bihmi-lb) | [lena.baum@charite.de](mailto:lena.baum@charite.de) |
 | [Armin Müller](https://github.com/muellerarmin)  | [armin.mueller@charite.de](mailto:armin.mueller@charite.de) |
 | [Marco Johns](https://github.com/Lumiukko) | [marco.johns@charite.de](mailto:marco.johns@charite.de) |
-| [Hammam Abu Attieh](https://github.com/AbuAttieh) | [hammam.abu-attieh@charite.de](mailto:hammam.abu-attieh@charite.de) |
 
 You can also find us at our working group's website [mi.bihealth.org](https://mi.bihealth.org).
 
