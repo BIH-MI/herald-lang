@@ -9,7 +9,7 @@ query -> filter _ tempRel:? {% function (d) { return {filter: d[0], time: d[2]};
        | %selection _ filter _ tempRel:? {% function (d) { return {selection: d[0], filter: d[2], time: d[4]}; } %}
        | %relationship _ filter _ %conjunctionAnd _ filter _ tempRel:? {% function (d) { return {relationship: d[0], filter1: d[2], filter2: d[6], time: d[8]}; } %}
        | existenceQuery (_ %conjunctionAnd _ existenceQuery):* _ tempRel:? {% function (d) {
-                                                                                var result = {existence: d[0]};
+                                                                                var result = d[0];
                                                                                 for (var i = 0; i < d[1].length; i++) {
                                                                                     var conjunctionAnd = d[1][i][1];
                                                                                     var existenceQuery = d[1][i][3];
