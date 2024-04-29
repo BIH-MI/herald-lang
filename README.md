@@ -2,46 +2,45 @@
 
 ## About HERALD
 
-HERALD stands for Human-centric Extraction for Research and Analysis of Longitudinal Data. It is a specialized query language designed to facilitate the extraction and aggregation of data into cross-sectional tables for statistical analyses and machine learning. The design of HERALD's syntax is intuitive, closely mirroring natural language to enhance user accessibility and efficiency. The prototype implementation consists of a HERALD excecution engine, combined with a graphical query editor, and paired with analytics functionalities to showcase the capabilities of the HERALD query language.
+HERALD stands for Human-centric Extraction for Research and Analysis of Longitudinal Data. It is a specialized query language designed to facilitate the extraction and aggregation of longitudinal data into cross-sectional tables for statistical analyses and machine learning. HERALD's syntax closely mirrors natural language. The prototype implementation consists of an excecution engine, a graphical query editor, and an online demo supporting analytics functionalities.
 
-This repository, "herald-lang," houses the core functionalities of HERALD.
+This repository, "herald-lang," contains the core modules of HERALD.
 
 ## Repository Contents
 
-- `herald-core`: This module forms the core of the HERALD query language. It encompasses the language's grammar, parser, and lexer, providing the essential components that define and interpret HERALD's syntax and commands.
+- `herald-core`: This module forms the core of the HERALD query language. It encompasses the language's grammar, parser, and lexer, as well as an execution engine.
 
-- `herald-ui`: This component is dedicated to the user interface aspects of HERALD. It includes an intuitive graphical query editor, facilities for query binding, and tools for browsing and interacting with concept hierarchies.
+- `herald-ui`: This component implements a user interface for graphically building queries and browsing the concept hierarchy contained within a dataset.
 
-- `ghdm-data`: This module incorporates the generic data model integral to HERALD and supports various data loading and wrangling functionalities.
+- `ghdm-data`: This module provides the generic data model used by HERALD and supports various data loading and wrangling functionalities.
 
-- `ghdm-ui`: This module houses additional UI elements, such as cohort selection and various modals.
+- `ghdm-ui`: This module contains additional UI elements, such as interfaces for cohort selection.
 
 
 ## Bundling Instructions
 
-To bundle HERALD-Lang for deployment or distribution, follow these steps:
+To bundle HERALD-Lang for deployment or distribution, run the `bundling.sh` script in your console. This script initiates the webpack bundling process, installs respective dependencies and stores the bundled files in a `dist` folder.
 
-1. Run the `bundling-all.sh` script in your console. This script initiates the webpack bundling process.
-2. The script will install respective dependencies and create bundled files in a `dist` folder.
-3. Copy the bundled files from the `dist` folder to the `src` folder in the [herald-demo](https://github.com/BIH-MI/herald-demo) repository to use them in the live demo and see HERALD in action.
+To see the results in action, copy the bundled files from the `dist` folder to the `src` folder in the [herald-demo](https://github.com/BIH-MI/herald-demo) repository to use them in the demo.
 
-## Live demo
+## Building the Grammar
 
-A live demonstration is accessible at [herald-lang.org](http://herald-lang.org) with the respective code stored at [herald-demo](https://github.com/BIH-MI/herald-demo).
+`npm install -g nearley`
+`nearleyc herald-grammar.ne -o herald-grammar.js`
 
+## Debugging the Grammar
+
+`https://nearley.js.org/docs/tooling`
+
+## Online demo
+
+An online demonstration is available at [herald-lang.org](http://herald-lang.org) with the respective code managed at [herald-demo](https://github.com/BIH-MI/herald-demo).
 
 ## Contact
 
-If you have questions or problems, we would like to invite you to open an issue at Github. This allows other users to collaborate and (hopefully) answer your question in a timely manner. If your request contains confidential information or is not suited for a public issue, send us an email.
+If you have questions or problems, please open an issue on GitHub or contact us directly.
 
-| Name                          | Email                                     |
-|-------------------------------|-------------------------------------------|
-| [Fabian Prasser](https://github.com/prasser)                  | [fabian.prasser@charite.de](mailto:fabian.prasser@charite.de) |
-| [Lena Baum](https://github.com/bihmi-lb) | [lena.baum@charite.de](mailto:lena.baum@charite.de) |
-| [Armin Müller](https://github.com/muellerarmin)  | [armin.mueller@charite.de](mailto:armin.mueller@charite.de) |
-| [Marco Johns](https://github.com/Lumiukko) | [marco.johns@charite.de](mailto:marco.johns@charite.de) |
-
-You can also find us at our working group's website [mi.bihealth.org](https://mi.bihealth.org).
+You can find out more about our work here: [mi.bihealth.org](https://mi.bihealth.org).
 
 ## License
 
