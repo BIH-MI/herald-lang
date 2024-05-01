@@ -25,7 +25,7 @@
  */ 
 const queryTypeKeywords = {
   selection: ['FIRST', 'LAST', 'ANY'],
-  aggregation: ['AVERAGE', 'COUNT', 'SUM', 'MIN', 'MAX', 'MOST FREQUENT'],
+  aggregation: ['AVERAGE', 'MEDIAN', 'COUNT', 'SUM', 'MIN', 'MAX', 'MOST FREQUENT'],
   existence: ['EXISTS', 'NOT EXISTS'],
   relationship: ['RATIO BETWEEN', 'DIFFERENCE BETWEEN', 'EQUALITY OF'],
 };

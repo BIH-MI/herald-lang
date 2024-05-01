@@ -362,6 +362,7 @@ function abbreviateKeyword(keyword) {
     "MONTH": "M",
     "YEAR": "Y",
     "AVERAGE": "Avg",
+    "MEDIAN": "Med",
     "AND": "And",
     "OR": "Or",
     "LABEL": "Lbl",
