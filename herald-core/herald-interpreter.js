@@ -422,6 +422,28 @@ function parseFilter(observations, query) {
           }
           break;
         }
+        case 'MEDIAN': {
+          let numericObservations = observations.filter(obs => obs.isNumeric);
+          if(numericObservations && numericObservations.length > 0){
+            numericObservations.sort((a, b) => a.value - b.value);
+            const count = numericObservations.length;
+            const middleIndex = Math.floor(count / 2);
+            if (count % 2 === 0) {
+              // Return average of two middle values
+              aggregatedValue = (parseFloat(numericObservations[middleIndex - 1].value) + parseFloat(numericObservations[middleIndex].value))/2;
+              aggregatedUnit = numericObservations[middleIndex - 1].unit === numericObservations[middleIndex].unit ? numericObservations[middleIndex].unit : "Mixed";
+            } else {
+              // Return value of the middle index
+              aggregatedValue = numericObservations[middleIndex].value;
+              aggregatedUnit = validateUnit(numericObservations[middleIndex].unit);
+            }
+          } else {
+            aggregatedValue = null;
+            aggregatedUnit = validateUnit(null);
+          }
+          
+          break;
+        }
         case 'COUNT': {
           aggregatedValue = observations.length;
           aggregatedUnit = validateUnit(null);

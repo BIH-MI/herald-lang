@@ -18,7 +18,7 @@ function getHeraldLexer(ignoreErrors = false) {
        conjunctionAnd: ['AND'],
        conjunctionOr: ['OR'],
        field: ['LABEL', 'VALUE', 'UNIT', 'START', 'END', 'NUMERIC'],
-       aggregation: ['AVERAGE', 'COUNT', 'SUM', 'MIN', 'MAX', 'MOST FREQUENT'],
+       aggregation: ['AVERAGE', 'MEDIAN', 'COUNT', 'SUM', 'MIN', 'MAX', 'MOST FREQUENT'],
        selection: ['FIRST', 'LAST', 'ANY'],
        relationship: ['RATIO BETWEEN', 'DIFFERENCE BETWEEN', 'EQUALITY OF'],
        existence: ['EXISTS', 'NOT EXISTS'],
