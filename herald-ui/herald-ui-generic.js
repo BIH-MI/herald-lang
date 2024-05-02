@@ -398,7 +398,7 @@ function initHeraldQueryEntryForm() {
                         <button class="dropdown-item herald-quick-add" data-action="EXISTS">EXISTS</button>
                         <button class="dropdown-item herald-quick-add" data-action="NOT EXISTS">NOT EXISTS</button>
                         <button class="dropdown-item herald-quick-add" data-action="AVERAGE">AVERAGE</button>
-						<button class="dropdown-item herald-quick-add" data-action="MEDIAN">MEDIAN</button>
+                        <button class="dropdown-item herald-quick-add" data-action="MEDIAN">MEDIAN</button>
                         <button class="dropdown-item herald-quick-add" data-action="COUNT">COUNT</button>
                         <button class="dropdown-item herald-quick-add" data-action="SUM">SUM</button>
                         <button class="dropdown-item herald-quick-add" data-action="MIN">MIN</button>
